@@ -1,7 +1,8 @@
+
 "use client"
 
 import * as React from "react"
-import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight, Activity, Cpu, Settings2, BarChart3, Download } from "lucide-react"
+import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight, Activity, Cpu, Settings2, BarChart3, Download, RefreshCcw } from "lucide-react"
 import { Language, translations } from "@/lib/translations"
 import { Setup } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,29 @@ import { SetupForm } from "@/components/setup-form"
 import { SetupCard } from "@/components/setup-card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+
+const INITIAL_EXAMPLES: Setup[] = [
+  {
+    id: "ex-1",
+    name: "Monza Qualy Trim",
+    car: "GT3-R 2024",
+    track: "Monza GP",
+    tires: { fl: 27.2, fr: 27.4, rl: 27.1, rr: 27.3 },
+    aero: { frontWing: 2, rearWing: 3 },
+    suspension: { stiffness: 180, rideHeight: 55, camber: -3.5, toe: 0.05 },
+    updatedAt: Date.now() - 3600000
+  },
+  {
+    id: "ex-2",
+    name: "Spa Endurance Setup",
+    car: "296 GT3",
+    track: "Spa-Francorchamps",
+    tires: { fl: 26.5, fr: 26.5, rl: 26.5, rr: 26.5 },
+    aero: { frontWing: 8, rearWing: 10 },
+    suspension: { stiffness: 140, rideHeight: 75, camber: -2.8, toe: 0.12 },
+    updatedAt: Date.now() - 86400000
+  }
+]
 
 export default function ApexTuneApp() {
   const [lang, setLang] = React.useState<Language>('en')
@@ -25,7 +49,12 @@ export default function ApexTuneApp() {
     const savedTheme = localStorage.getItem('apextune_theme') as 'light' | 'dark'
     const savedLang = localStorage.getItem('apextune_lang') as Language
 
-    if (savedSetups) setSetups(JSON.parse(savedSetups))
+    if (savedSetups && JSON.parse(savedSetups).length > 0) {
+      setSetups(JSON.parse(savedSetups))
+    } else {
+      setSetups(INITIAL_EXAMPLES)
+    }
+
     if (savedTheme) setTheme(savedTheme || 'dark')
     if (savedLang) setLang(savedLang || 'en')
     
@@ -81,6 +110,10 @@ export default function ApexTuneApp() {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+  }
+
+  const resetToExamples = () => {
+    setSetups(INITIAL_EXAMPLES)
   }
 
   if (!isHydrated) return null
@@ -190,17 +223,27 @@ export default function ApexTuneApp() {
               </h2>
               <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">Version 3.1</span>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="md:hidden h-9 font-headline text-[10px] uppercase rounded-none border-primary text-primary"
-              onClick={() => {
-                setEditingSetup(undefined)
-                setIsFormOpen(true)
-              }}
-            >
-              <Plus className="w-3 h-3 mr-1" /> {t.newSetup}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-9 font-headline text-[10px] uppercase rounded-none border-muted-foreground/30 hover:border-primary text-muted-foreground hover:text-primary transition-all"
+                onClick={resetToExamples}
+              >
+                <RefreshCcw className="w-3 h-3 mr-2" /> Load Examples
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="md:hidden h-9 font-headline text-[10px] uppercase rounded-none border-primary text-primary"
+                onClick={() => {
+                  setEditingSetup(undefined)
+                  setIsFormOpen(true)
+                }}
+              >
+                <Plus className="w-3 h-3 mr-1" /> {t.newSetup}
+              </Button>
+            </div>
           </div>
 
           {setups.length === 0 ? (
