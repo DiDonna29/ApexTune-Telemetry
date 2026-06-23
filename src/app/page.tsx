@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -124,33 +123,33 @@ export default function ApexTuneApp() {
       
       {/* Navigation Header */}
       <header className="border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-50 h-20 flex items-center">
-        <div className="max-w-[1600px] w-full mx-auto px-4 md:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="relative group">
+        <div className="max-w-[1600px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6 min-w-0">
+            <div className="relative group shrink-0">
               <div className="absolute -inset-1 bg-primary/20 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
               <div className="relative w-10 h-10 bg-primary rounded-sm flex items-center justify-center transform skew-x-[-12deg]">
                 <ChevronRight className="w-7 h-7 text-primary-foreground stroke-[3px] skew-x-[12deg]" />
               </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-headline tracking-tighter leading-none italic">{t.title}</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <p className="text-[9px] text-muted-foreground uppercase font-headline tracking-[0.3em] font-medium">{t.subtitle} // v3.1.0</p>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-headline tracking-tighter leading-none italic truncate uppercase">{t.title}</h1>
+              <div className="flex items-center gap-2 mt-1 overflow-hidden">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+                <p className="text-[9px] text-muted-foreground uppercase font-headline tracking-[0.3em] font-medium truncate">{t.subtitle} // v3.1.0</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={toggleLang} className="rounded-none border-border hover:bg-primary/5">
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="icon" onClick={toggleLang} className="rounded-none border-border hover:bg-primary/5 w-9 h-9">
               <Globe className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={toggleTheme} className="rounded-none border-border hover:bg-primary/5">
+            <Button variant="outline" size="icon" onClick={toggleTheme} className="rounded-none border-border hover:bg-primary/5 w-9 h-9">
               {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </Button>
-            <div className="h-8 w-[1px] bg-border mx-2" />
+            <div className="h-8 w-[1px] bg-border mx-1 hidden sm:block" />
             <Button 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-headline uppercase text-xs h-10 px-6 gap-2 hidden md:flex rounded-none"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-headline uppercase text-xs h-9 px-4 gap-2 hidden md:flex rounded-none"
               onClick={() => {
                 setEditingSetup(undefined)
                 setIsFormOpen(true)
@@ -162,80 +161,80 @@ export default function ApexTuneApp() {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-12">
+      <main className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-12 overflow-hidden">
         {/* Asymmetric Stats Grid */}
         <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-4 lg:col-span-3 bg-card technical-border p-6 group hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-              <LayoutDashboard className="w-4 h-4 text-primary" />
-              <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest">{t.dashboard}</p>
+          <div className="md:col-span-4 lg:col-span-3 bg-card technical-border p-6 group hover:border-primary/50 transition-colors overflow-hidden">
+            <div className="flex items-center gap-3 mb-4 overflow-hidden">
+              <LayoutDashboard className="w-4 h-4 text-primary shrink-0" />
+              <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest truncate">{t.dashboard}</p>
             </div>
-            <p className="text-5xl font-headline italic">{setups.length}</p>
-            <div className="mt-4 flex items-center gap-2">
-              <span className="text-[9px] text-primary uppercase font-bold">Loaded Configs</span>
+            <p className="text-5xl font-headline italic truncate">{setups.length}</p>
+            <div className="mt-4 flex items-center gap-2 overflow-hidden">
+              <span className="text-[9px] text-primary uppercase font-bold truncate">Loaded Configs</span>
               <div className="h-[1px] flex-1 bg-primary/20" />
             </div>
           </div>
 
-          <div className="md:col-span-8 lg:col-span-6 bg-card technical-border p-6 flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest">Active Circuit</p>
+          <div className="md:col-span-8 lg:col-span-6 bg-card technical-border p-6 flex flex-col justify-between overflow-hidden">
+            <div className="flex justify-between items-start gap-4 overflow-hidden">
+              <div className="min-w-0">
+                <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest truncate">Active Circuit</p>
                 <p className="text-3xl font-headline italic mt-1 uppercase truncate">{setups[0]?.track || '--'}</p>
               </div>
-              <Activity className="w-5 h-5 text-primary" />
+              <Activity className="w-5 h-5 text-primary shrink-0" />
             </div>
-            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-4">
-              <div className="text-center">
-                <p className="text-[8px] text-muted-foreground uppercase">Latency</p>
-                <p className="text-xs font-headline">0.42ms</p>
+            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-4 overflow-hidden">
+              <div className="text-center min-w-0">
+                <p className="text-[8px] text-muted-foreground uppercase truncate">Latency</p>
+                <p className="text-xs font-headline truncate tabular-nums">0.42ms</p>
               </div>
-              <div className="text-center border-x border-border">
-                <p className="text-[8px] text-muted-foreground uppercase">Stability</p>
-                <p className="text-xs font-headline text-primary">High</p>
+              <div className="text-center border-x border-border min-w-0 px-2">
+                <p className="text-[8px] text-muted-foreground uppercase truncate">Stability</p>
+                <p className="text-xs font-headline text-primary truncate">High</p>
               </div>
-              <div className="text-center">
-                <p className="text-[8px] text-muted-foreground uppercase">Sync</p>
-                <p className="text-xs font-headline">Local</p>
+              <div className="text-center min-w-0">
+                <p className="text-[8px] text-muted-foreground uppercase truncate">Sync</p>
+                <p className="text-xs font-headline truncate">Local</p>
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-12 lg:col-span-3 bg-primary text-primary-foreground p-6 flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <p className="text-[10px] font-headline uppercase tracking-widest opacity-80">System Status</p>
-              <Cpu className="w-5 h-5" />
+          <div className="md:col-span-12 lg:col-span-3 bg-primary text-primary-foreground p-6 flex flex-col justify-between overflow-hidden">
+            <div className="flex justify-between items-start gap-4 overflow-hidden">
+              <p className="text-[10px] font-headline uppercase tracking-widest opacity-80 truncate">System Status</p>
+              <Cpu className="w-5 h-5 shrink-0" />
             </div>
-            <div>
-              <p className="text-4xl font-headline italic leading-none">READY</p>
-              <p className="text-[10px] uppercase font-bold mt-2 opacity-80">Simulator Interface Online</p>
+            <div className="overflow-hidden">
+              <p className="text-4xl font-headline italic leading-none truncate">READY</p>
+              <p className="text-[10px] uppercase font-bold mt-2 opacity-80 truncate">Simulator Interface Online</p>
             </div>
           </div>
         </section>
 
         {/* Setup Grid Section */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between border-b-2 border-primary/20 pb-4">
-            <div className="flex items-center gap-4">
-              <h2 className="text-xl font-headline italic flex items-center gap-3">
-                <BarChart3 className="w-5 h-5 text-primary" />
+        <section className="space-y-6 overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-primary/20 pb-4 gap-4">
+            <div className="flex items-center gap-4 overflow-hidden">
+              <h2 className="text-xl font-headline italic flex items-center gap-3 truncate">
+                <BarChart3 className="w-5 h-5 text-primary shrink-0" />
                 Telemetry Repository
               </h2>
-              <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">Version 3.1</span>
+              <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground shrink-0">V3.1</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-hidden">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-9 font-headline text-[10px] uppercase rounded-none border-muted-foreground/30 hover:border-primary text-muted-foreground hover:text-primary transition-all"
+                className="h-9 font-headline text-[10px] uppercase rounded-none border-muted-foreground/30 hover:border-primary text-muted-foreground hover:text-primary transition-all shrink-0"
                 onClick={resetToExamples}
               >
-                <RefreshCcw className="w-3 h-3 mr-2" /> Load Examples
+                <RefreshCcw className="w-3 h-3 mr-2" /> Examples
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="md:hidden h-9 font-headline text-[10px] uppercase rounded-none border-primary text-primary"
+                className="md:hidden h-9 font-headline text-[10px] uppercase rounded-none border-primary text-primary shrink-0"
                 onClick={() => {
                   setEditingSetup(undefined)
                   setIsFormOpen(true)
@@ -247,13 +246,13 @@ export default function ApexTuneApp() {
           </div>
 
           {setups.length === 0 ? (
-            <div className="bg-card/30 border border-dashed border-border py-24 flex flex-col items-center justify-center text-center space-y-6 technical-border">
+            <div className="bg-card/30 border border-dashed border-border py-24 flex flex-col items-center justify-center text-center space-y-6 technical-border overflow-hidden">
               <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center">
                 <Settings2 className="w-8 h-8 text-muted-foreground/30" />
               </div>
-              <div className="space-y-2">
-                <p className="text-lg font-headline uppercase italic text-muted-foreground">{t.noSetups}</p>
-                <p className="text-xs text-muted-foreground/60 max-w-xs uppercase tracking-widest">Connect your telemetry feed or create a manual profile</p>
+              <div className="space-y-2 px-4">
+                <p className="text-lg font-headline uppercase italic text-muted-foreground truncate">{t.noSetups}</p>
+                <p className="text-xs text-muted-foreground/60 max-w-xs uppercase tracking-widest break-words mx-auto">Connect your telemetry feed or create a manual profile</p>
               </div>
               <Button 
                 onClick={() => setIsFormOpen(true)}
@@ -263,9 +262,9 @@ export default function ApexTuneApp() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {setups.map((setup, idx) => (
-                <div key={setup.id} className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {setups.map((setup) => (
+                <div key={setup.id} className="space-y-2 overflow-hidden min-w-0">
                   <SetupCard 
                     setup={setup} 
                     lang={lang} 
@@ -274,10 +273,10 @@ export default function ApexTuneApp() {
                   />
                   <Button 
                     variant="ghost" 
-                    className="w-full rounded-none border border-border/50 h-9 font-headline text-[10px] uppercase gap-2 hover:bg-primary/10 hover:text-primary transition-colors"
+                    className="w-full rounded-none border border-border/50 h-9 font-headline text-[10px] uppercase gap-2 hover:bg-primary/10 hover:text-primary transition-colors overflow-hidden"
                     onClick={() => handleExport(setup)}
                   >
-                    <Download className="w-3 h-3" /> {t.export}
+                    <Download className="w-3 h-3 shrink-0" /> <span className="truncate">{t.export}</span>
                   </Button>
                 </div>
               ))}
@@ -293,14 +292,14 @@ export default function ApexTuneApp() {
           setEditingSetup(undefined)
         }
       }}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-background/95 backdrop-blur-2xl border-primary border-t-8 rounded-none p-0">
-          <div className="p-8">
-            <DialogHeader className="mb-12">
-              <DialogTitle className="text-3xl font-headline italic uppercase flex items-center gap-4">
-                <div className="w-10 h-10 bg-primary text-primary-foreground flex items-center justify-center skew-x-[-12deg]">
-                  <Settings2 className="w-6 h-6 skew-x-[12deg]" />
+        <DialogContent className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto bg-background/95 backdrop-blur-2xl border-primary border-t-8 rounded-none p-0">
+          <div className="p-4 sm:p-8">
+            <DialogHeader className="mb-8 sm:mb-12 overflow-hidden">
+              <DialogTitle className="text-2xl sm:text-3xl font-headline italic uppercase flex items-center gap-4 truncate">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary text-primary-foreground flex items-center justify-center skew-x-[-12deg] shrink-0">
+                  <Settings2 className="w-5 h-5 sm:w-6 sm:h-6 skew-x-[12deg]" />
                 </div>
-                {editingSetup ? t.editSetup : t.newSetup}
+                <span className="truncate">{editingSetup ? t.editSetup : t.newSetup}</span>
               </DialogTitle>
             </DialogHeader>
             <SetupForm 
@@ -313,18 +312,18 @@ export default function ApexTuneApp() {
         </DialogContent>
       </Dialog>
 
-      <footer className="mt-20 border-t border-border py-12 px-8 bg-muted/5">
-        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3 grayscale opacity-50">
-             <ChevronRight className="w-5 h-5 text-primary stroke-[3px]" />
-             <p className="text-xs font-headline uppercase tracking-[0.2em]">{t.title}</p>
+      <footer className="mt-20 border-t border-border py-12 px-4 sm:px-8 bg-muted/5 overflow-hidden">
+        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center sm:text-left">
+          <div className="flex items-center gap-3 grayscale opacity-50 overflow-hidden">
+             <ChevronRight className="w-5 h-5 text-primary stroke-[3px] shrink-0" />
+             <p className="text-xs font-headline uppercase tracking-[0.2em] truncate">{t.title}</p>
           </div>
-          <div className="flex gap-8 text-[10px] text-muted-foreground font-headline uppercase tracking-widest">
-            <span className="hover:text-primary cursor-pointer transition-colors">Telemetry API</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Documentation</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Privacy Protocol</span>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-[10px] text-muted-foreground font-headline uppercase tracking-widest">
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Telemetry API</span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Documentation</span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Privacy Protocol</span>
           </div>
-          <p className="text-[10px] text-muted-foreground uppercase font-headline">© 2024 ApexTune High Performance</p>
+          <p className="text-[10px] text-muted-foreground uppercase font-headline truncate">© 2024 ApexTune High Performance</p>
         </div>
       </footer>
     </div>
