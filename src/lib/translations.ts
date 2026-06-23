@@ -1,4 +1,3 @@
-
 export type Language = 'en' | 'es';
 
 export const translations = {
@@ -12,6 +11,7 @@ export const translations = {
     cancel: 'Cancel',
     dashboard: 'Dashboard',
     noSetups: 'No configurations found. Start by creating a new one.',
+    export: 'Export .JSON',
     
     // Form Labels
     name: 'Setup Name',
@@ -19,7 +19,7 @@ export const translations = {
     track: 'Circuit / Track',
     tirePressure: 'Tire Pressures (PSI)',
     aerodynamics: 'Aerodynamics',
-    suspension: 'Suspension',
+    suspension: 'Suspension & Geometry',
     
     // Detailed Technical Terms
     fl: 'Front Left',
@@ -28,8 +28,10 @@ export const translations = {
     rr: 'Rear Right',
     frontWing: 'Front Wing Angle',
     rearWing: 'Rear Wing Angle',
-    stiffness: 'Spring Stiffness',
+    stiffness: 'Spring Stiffness (N/mm)',
     rideHeight: 'Ride Height (mm)',
+    camber: 'Camber Angle (°)',
+    toe: 'Toe-in/out (mm)',
     
     // Placeholders
     placeholderName: 'e.g. Monza Qualy Run',
@@ -51,6 +53,7 @@ export const translations = {
     cancel: 'Cancelar',
     dashboard: 'Panel de Control',
     noSetups: 'No se encontraron configuraciones. Comienza creando una nueva.',
+    export: 'Exportar .JSON',
     
     // Form Labels
     name: 'Nombre del Setup',
@@ -58,7 +61,7 @@ export const translations = {
     track: 'Circuito / Pista',
     tirePressure: 'Presión de Neumáticos (PSI)',
     aerodynamics: 'Aerodinámica',
-    suspension: 'Suspensión',
+    suspension: 'Suspensión y Geometría',
     
     // Detailed Technical Terms
     fl: 'Delantero Izq.',
@@ -67,8 +70,10 @@ export const translations = {
     rr: 'Trasero Der.',
     frontWing: 'Ángulo Alerón Del.',
     rearWing: 'Ángulo Alerón Tras.',
-    stiffness: 'Rigidez de Muelles',
+    stiffness: 'Rigidez de Muelles (N/mm)',
     rideHeight: 'Altura al Suelo (mm)',
+    camber: 'Ángulo de Caída (°)',
+    toe: 'Convergencia (mm)',
     
     // Placeholders
     placeholderName: 'ej. Monza Clasificación',

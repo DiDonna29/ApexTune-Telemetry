@@ -1,4 +1,3 @@
-
 export interface Setup {
   id: string;
   name: string;
@@ -17,6 +16,8 @@ export interface Setup {
   suspension: {
     stiffness: number;
     rideHeight: number;
+    camber: number;
+    toe: number;
   };
   updatedAt: number;
 }

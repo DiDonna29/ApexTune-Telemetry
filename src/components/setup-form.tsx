@@ -1,14 +1,20 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Gauge, Wind, Activity, Save, X, Terminal, ArrowRight } from "lucide-react"
+import { Gauge, Wind, Activity, Save, X, Terminal, ArrowRight, Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Slider } from "@/components/ui/slider"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { translations, Language } from "@/lib/translations"
 import { Setup } from "@/lib/types"
 
@@ -17,18 +23,20 @@ const formSchema = z.object({
   car: z.string().min(1),
   track: z.string().min(1),
   tires: z.object({
-    fl: z.number().min(0),
-    fr: z.number().min(0),
-    rl: z.number().min(0),
-    rr: z.number().min(0),
+    fl: z.number(),
+    fr: z.number(),
+    rl: z.number(),
+    rr: z.number(),
   }),
   aero: z.object({
-    frontWing: z.number().min(0),
-    rearWing: z.number().min(0),
+    frontWing: z.number(),
+    rearWing: z.number(),
   }),
   suspension: z.object({
-    stiffness: z.number().min(0),
-    rideHeight: z.number().min(0),
+    stiffness: z.number(),
+    rideHeight: z.number(),
+    camber: z.number(),
+    toe: z.number(),
   }),
 })
 
@@ -41,7 +49,7 @@ interface SetupFormProps {
 
 export function SetupForm({ initialData, lang, onSave, onCancel }: SetupFormProps) {
   const t = translations[lang]
-  const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof formSchema>>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
@@ -49,99 +57,240 @@ export function SetupForm({ initialData, lang, onSave, onCancel }: SetupFormProp
       track: "",
       tires: { fl: 28.5, fr: 28.5, rl: 28.5, rr: 28.5 },
       aero: { frontWing: 5, rearWing: 5 },
-      suspension: { stiffness: 150, rideHeight: 60 },
+      suspension: { stiffness: 150, rideHeight: 60, camber: -3.0, toe: 0.1 },
     },
   })
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="space-y-12">
+    <form onSubmit={handleSubmit(onSave)} className="space-y-8">
       {/* Identification Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-3 border-l-4 border-primary pl-4">
-          <Terminal className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-headline uppercase tracking-widest font-bold">Metadata Calibration</h3>
+      <section className="bg-muted/10 p-6 technical-border space-y-6">
+        <div className="flex items-center gap-3">
+          <Terminal className="w-4 h-4 text-primary" />
+          <h3 className="text-xs font-headline uppercase tracking-widest font-bold">Metadata Calibration</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2.5">
-            <Label className="font-headline text-[10px] uppercase tracking-widest text-muted-foreground">{t.name}</Label>
-            <Input {...register("name")} placeholder={t.placeholderName} className="rounded-none border-border focus:border-primary h-12 bg-muted/20" />
-            {errors.name && <p className="text-[10px] text-destructive uppercase font-bold">Signal Error: Required Field</p>}
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase font-bold text-muted-foreground">{t.name}</Label>
+            <Input {...register("name")} placeholder={t.placeholderName} className="rounded-none h-11 bg-background" />
           </div>
-          <div className="space-y-2.5">
-            <Label className="font-headline text-[10px] uppercase tracking-widest text-muted-foreground">{t.car}</Label>
-            <Input {...register("car")} placeholder={t.placeholderCar} className="rounded-none border-border focus:border-primary h-12 bg-muted/20" />
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase font-bold text-muted-foreground">{t.car}</Label>
+            <Input {...register("car")} placeholder={t.placeholderCar} className="rounded-none h-11 bg-background" />
           </div>
-          <div className="space-y-2.5">
-            <Label className="font-headline text-[10px] uppercase tracking-widest text-muted-foreground">{t.track}</Label>
-            <Input {...register("track")} placeholder={t.placeholderTrack} className="rounded-none border-border focus:border-primary h-12 bg-muted/20" />
-          </div>
-        </div>
-      </section>
-
-      {/* Engineering Pods Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Tires Pod */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 text-primary">
-            <Gauge className="w-5 h-5" />
-            <h3 className="text-xs font-headline uppercase tracking-[0.2em] font-bold">{t.tirePressure}</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-4 p-6 bg-muted/10 technical-border">
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.fl}</Label>
-              <Input type="number" step="0.1" {...register("tires.fl", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.fr}</Label>
-              <Input type="number" step="0.1" {...register("tires.fr", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.rl}</Label>
-              <Input type="number" step="0.1" {...register("tires.rl", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.rr}</Label>
-              <Input type="number" step="0.1" {...register("tires.rr", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-          </div>
-        </div>
-
-        {/* Aero Pod */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 text-primary">
-            <Wind className="w-5 h-5" />
-            <h3 className="text-xs font-headline uppercase tracking-[0.2em] font-bold">{t.aerodynamics}</h3>
-          </div>
-          <div className="space-y-4 p-6 bg-muted/10 technical-border">
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.frontWing}</Label>
-              <Input type="number" {...register("aero.frontWing", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.rearWing}</Label>
-              <Input type="number" {...register("aero.rearWing", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-          </div>
-        </div>
-
-        {/* Suspension Pod */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 text-primary">
-            <Activity className="w-5 h-5" />
-            <h3 className="text-xs font-headline uppercase tracking-[0.2em] font-bold">{t.suspension}</h3>
-          </div>
-          <div className="space-y-4 p-6 bg-muted/10 technical-border">
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.stiffness}</Label>
-              <Input type="number" {...register("suspension.stiffness", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[9px] text-muted-foreground uppercase font-bold">{t.rideHeight}</Label>
-              <Input type="number" {...register("suspension.rideHeight", { valueAsNumber: true })} className="h-10 text-xs rounded-none border-border/50 font-mono" />
-            </div>
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase font-bold text-muted-foreground">{t.track}</Label>
+            <Input {...register("track")} placeholder={t.placeholderTrack} className="rounded-none h-11 bg-background" />
           </div>
         </div>
       </section>
+
+      {/* Accordion Sections */}
+      <Accordion type="single" collapsible defaultValue="tires" className="w-full space-y-4">
+        {/* Tires Section */}
+        <AccordionItem value="tires" className="border technical-border px-6 py-2 bg-card">
+          <AccordionTrigger className="hover:no-underline">
+            <div className="flex items-center gap-4">
+              <Gauge className="w-5 h-5 text-primary" />
+              <span className="font-headline uppercase text-sm tracking-widest">{t.tirePressure}</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="pt-6 pb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {(['fl', 'fr', 'rl', 'rr'] as const).map((pos) => (
+                <div key={pos} className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t[pos]}</Label>
+                    <Controller
+                      name={`tires.${pos}`}
+                      control={control}
+                      render={({ field }) => (
+                        <span className="text-xs font-mono text-primary font-bold">{field.value.toFixed(1)} PSI</span>
+                      )}
+                    />
+                  </div>
+                  <Controller
+                    name={`tires.${pos}`}
+                    control={control}
+                    render={({ field }) => (
+                      <Slider
+                        min={15}
+                        max={40}
+                        step={0.1}
+                        value={[field.value]}
+                        onValueChange={(val) => field.onChange(val[0])}
+                        className="py-4"
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Aero Section */}
+        <AccordionItem value="aero" className="border technical-border px-6 py-2 bg-card">
+          <AccordionTrigger className="hover:no-underline">
+            <div className="flex items-center gap-4">
+              <Wind className="w-5 h-5 text-primary" />
+              <span className="font-headline uppercase text-sm tracking-widest">{t.aerodynamics}</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="pt-6 pb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {(['frontWing', 'rearWing'] as const).map((part) => (
+                <div key={part} className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t[part]}</Label>
+                    <Controller
+                      name={`aero.${part}`}
+                      control={control}
+                      render={({ field }) => (
+                        <span className="text-xs font-mono text-primary font-bold">{field.value} POS</span>
+                      )}
+                    />
+                  </div>
+                  <Controller
+                    name={`aero.${part}`}
+                    control={control}
+                    render={({ field }) => (
+                      <Slider
+                        min={0}
+                        max={20}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={(val) => field.onChange(val[0])}
+                        className="py-4"
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Suspension Section */}
+        <AccordionItem value="suspension" className="border technical-border px-6 py-2 bg-card">
+          <AccordionTrigger className="hover:no-underline">
+            <div className="flex items-center gap-4">
+              <Activity className="w-5 h-5 text-primary" />
+              <span className="font-headline uppercase text-sm tracking-widest">{t.suspension}</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="pt-6 pb-8 space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t.stiffness}</Label>
+                  <Controller
+                    name="suspension.stiffness"
+                    control={control}
+                    render={({ field }) => (
+                      <span className="text-xs font-mono text-primary font-bold">{field.value} N/mm</span>
+                    )}
+                  />
+                </div>
+                <Controller
+                  name="suspension.stiffness"
+                  control={control}
+                  render={({ field }) => (
+                    <Slider
+                      min={50}
+                      max={300}
+                      step={5}
+                      value={[field.value]}
+                      onValueChange={(val) => field.onChange(val[0])}
+                      className="py-4"
+                    />
+                  )}
+                />
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t.rideHeight}</Label>
+                  <Controller
+                    name="suspension.rideHeight"
+                    control={control}
+                    render={({ field }) => (
+                      <span className="text-xs font-mono text-primary font-bold">{field.value} mm</span>
+                    )}
+                  />
+                </div>
+                <Controller
+                  name="suspension.rideHeight"
+                  control={control}
+                  render={({ field }) => (
+                    <Slider
+                      min={30}
+                      max={150}
+                      step={1}
+                      value={[field.value]}
+                      onValueChange={(val) => field.onChange(val[0])}
+                      className="py-4"
+                    />
+                  )}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t.camber}</Label>
+                  <Controller
+                    name="suspension.camber"
+                    control={control}
+                    render={({ field }) => (
+                      <span className="text-xs font-mono text-primary font-bold">{field.value.toFixed(1)}°</span>
+                    )}
+                  />
+                </div>
+                <Controller
+                  name="suspension.camber"
+                  control={control}
+                  render={({ field }) => (
+                    <Slider
+                      min={-5.0}
+                      max={0.0}
+                      step={0.1}
+                      value={[field.value]}
+                      onValueChange={(val) => field.onChange(val[0])}
+                      className="py-4"
+                    />
+                  )}
+                />
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">{t.toe}</Label>
+                  <Controller
+                    name="suspension.toe"
+                    control={control}
+                    render={({ field }) => (
+                      <span className="text-xs font-mono text-primary font-bold">{field.value.toFixed(2)} mm</span>
+                    )}
+                  />
+                </div>
+                <Controller
+                  name="suspension.toe"
+                  control={control}
+                  render={({ field }) => (
+                    <Slider
+                      min={-0.5}
+                      max={0.5}
+                      step={0.01}
+                      value={[field.value]}
+                      onValueChange={(val) => field.onChange(val[0])}
+                      className="py-4"
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {/* Action Bar */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-border/50">

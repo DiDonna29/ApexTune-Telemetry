@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight, Activity, Cpu, Settings2, BarChart3 } from "lucide-react"
+import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight, Activity, Cpu, Settings2, BarChart3, Download } from "lucide-react"
 import { Language, translations } from "@/lib/translations"
 import { Setup } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -73,6 +73,16 @@ export default function ApexTuneApp() {
     setIsFormOpen(true)
   }
 
+  const handleExport = (setup: Setup) => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(setup, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `apextune_${setup.name.toLowerCase().replace(/\s+/g, '_')}.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+
   if (!isHydrated) return null
 
   return (
@@ -93,7 +103,7 @@ export default function ApexTuneApp() {
               <h1 className="text-2xl font-headline tracking-tighter leading-none italic">{t.title}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <p className="text-[9px] text-muted-foreground uppercase font-headline tracking-[0.3em] font-medium">{t.subtitle} // v2.4.0</p>
+                <p className="text-[9px] text-muted-foreground uppercase font-headline tracking-[0.3em] font-medium">{t.subtitle} // v3.1.0</p>
               </div>
             </div>
           </div>
@@ -129,7 +139,7 @@ export default function ApexTuneApp() {
             </div>
             <p className="text-5xl font-headline italic">{setups.length}</p>
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-[9px] text-primary uppercase font-bold">Stored Modules</span>
+              <span className="text-[9px] text-primary uppercase font-bold">Loaded Configs</span>
               <div className="h-[1px] flex-1 bg-primary/20" />
             </div>
           </div>
@@ -148,24 +158,24 @@ export default function ApexTuneApp() {
                 <p className="text-xs font-headline">0.42ms</p>
               </div>
               <div className="text-center border-x border-border">
-                <p className="text-[8px] text-muted-foreground uppercase">Packet Loss</p>
-                <p className="text-xs font-headline text-primary">0%</p>
+                <p className="text-[8px] text-muted-foreground uppercase">Stability</p>
+                <p className="text-xs font-headline text-primary">High</p>
               </div>
               <div className="text-center">
                 <p className="text-[8px] text-muted-foreground uppercase">Sync</p>
-                <p className="text-xs font-headline">Enabled</p>
+                <p className="text-xs font-headline">Local</p>
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-12 lg:col-span-3 bg-primary text-primary-foreground p-6 flex flex-col justify-between transform -skew-x-1 lg:skew-x-0">
+          <div className="md:col-span-12 lg:col-span-3 bg-primary text-primary-foreground p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <p className="text-[10px] font-headline uppercase tracking-widest opacity-80">System Status</p>
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-4xl font-headline italic leading-none">OPTIMAL</p>
-              <p className="text-[10px] uppercase font-bold mt-2 opacity-80">All sensors verified</p>
+              <p className="text-4xl font-headline italic leading-none">READY</p>
+              <p className="text-[10px] uppercase font-bold mt-2 opacity-80">Simulator Interface Online</p>
             </div>
           </div>
         </section>
@@ -176,9 +186,9 @@ export default function ApexTuneApp() {
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-headline italic flex items-center gap-3">
                 <BarChart3 className="w-5 h-5 text-primary" />
-                Telemetry Logs
+                Telemetry Repository
               </h2>
-              <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">Local Repository</span>
+              <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">Version 3.1</span>
             </div>
             <Button 
               variant="outline" 
@@ -212,16 +222,20 @@ export default function ApexTuneApp() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {setups.map((setup, idx) => (
-                <div key={setup.id} className={cn(
-                  "animate-in fade-in slide-in-from-bottom-4 duration-500",
-                  `delay-[${idx * 100}ms]`
-                )}>
+                <div key={setup.id} className="space-y-2">
                   <SetupCard 
                     setup={setup} 
                     lang={lang} 
                     onEdit={handleEdit} 
                     onDelete={handleDelete} 
                   />
+                  <Button 
+                    variant="ghost" 
+                    className="w-full rounded-none border border-border/50 h-9 font-headline text-[10px] uppercase gap-2 hover:bg-primary/10 hover:text-primary transition-colors"
+                    onClick={() => handleExport(setup)}
+                  >
+                    <Download className="w-3 h-3" /> {t.export}
+                  </Button>
                 </div>
               ))}
             </div>
@@ -236,12 +250,12 @@ export default function ApexTuneApp() {
           setEditingSetup(undefined)
         }
       }}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-background/95 backdrop-blur-2xl border-primary border-t-4 rounded-none p-0">
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-background/95 backdrop-blur-2xl border-primary border-t-8 rounded-none p-0">
           <div className="p-8">
-            <DialogHeader className="mb-8">
+            <DialogHeader className="mb-12">
               <DialogTitle className="text-3xl font-headline italic uppercase flex items-center gap-4">
-                <div className="w-8 h-8 bg-primary text-primary-foreground flex items-center justify-center skew-x-[-12deg]">
-                  <Settings2 className="w-5 h-5 skew-x-[12deg]" />
+                <div className="w-10 h-10 bg-primary text-primary-foreground flex items-center justify-center skew-x-[-12deg]">
+                  <Settings2 className="w-6 h-6 skew-x-[12deg]" />
                 </div>
                 {editingSetup ? t.editSetup : t.newSetup}
               </DialogTitle>
@@ -256,7 +270,7 @@ export default function ApexTuneApp() {
         </DialogContent>
       </Dialog>
 
-      <footer className="mt-20 border-t border-border py-12 px-8">
+      <footer className="mt-20 border-t border-border py-12 px-8 bg-muted/5">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-3 grayscale opacity-50">
              <ChevronRight className="w-5 h-5 text-primary stroke-[3px]" />
