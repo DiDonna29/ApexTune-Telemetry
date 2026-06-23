@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-racing",
+      "description": "Close up of a racing car cockpit with technical displays",
+      "imageUrl": "https://picsum.photos/seed/racing-cockpit/1200/600",
+      "imageHint": "racing cockpit technical"
+    }
+  ]
+}
