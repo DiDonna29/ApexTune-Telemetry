@@ -1,8 +1,7 @@
-
 "use client"
 
 import * as React from "react"
-import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight } from "lucide-react"
+import { Plus, Globe, Moon, Sun, LayoutDashboard, ChevronRight, Activity, Cpu, Settings2, BarChart3 } from "lucide-react"
 import { Language, translations } from "@/lib/translations"
 import { Setup } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -21,20 +20,18 @@ export default function ApexTuneApp() {
 
   const t = translations[lang]
 
-  // Initial load
   React.useEffect(() => {
     const savedSetups = localStorage.getItem('apextune_setups')
     const savedTheme = localStorage.getItem('apextune_theme') as 'light' | 'dark'
     const savedLang = localStorage.getItem('apextune_lang') as Language
 
     if (savedSetups) setSetups(JSON.parse(savedSetups))
-    if (savedTheme) setTheme(savedTheme)
-    if (savedLang) setLang(savedLang)
+    if (savedTheme) setTheme(savedTheme || 'dark')
+    if (savedLang) setLang(savedLang || 'en')
     
     setIsHydrated(true)
   }, [])
 
-  // Sync state
   React.useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('apextune_setups', JSON.stringify(setups))
@@ -79,75 +76,114 @@ export default function ApexTuneApp() {
   if (!isHydrated) return null
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-body transition-none">
+    <div className="min-h-screen bg-background text-foreground font-body overflow-x-hidden relative">
+      <div className="scanline pointer-events-none" />
+      
       {/* Navigation Header */}
-      <header className="border-b border-border bg-card/30 backdrop-blur-sm sticky top-0 z-50 px-4 md:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-            <ChevronRight className="w-6 h-6 text-primary-foreground stroke-[3px]" />
+      <header className="border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-50 h-20 flex items-center">
+        <div className="max-w-[1600px] w-full mx-auto px-4 md:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-primary/20 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+              <div className="relative w-10 h-10 bg-primary rounded-sm flex items-center justify-center transform skew-x-[-12deg]">
+                <ChevronRight className="w-7 h-7 text-primary-foreground stroke-[3px] skew-x-[12deg]" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-headline tracking-tighter leading-none italic">{t.title}</h1>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <p className="text-[9px] text-muted-foreground uppercase font-headline tracking-[0.3em] font-medium">{t.subtitle} // v2.4.0</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-headline tracking-tighter leading-none">{t.title}</h1>
-            <p className="text-[10px] text-primary uppercase font-headline tracking-[0.2em]">{t.subtitle}</p>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleLang} className="hover:bg-primary/10">
-            <Globe className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-primary/10">
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </Button>
-          <div className="h-6 w-[1px] bg-border mx-2" />
-          <Button 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-headline uppercase text-xs h-9 px-4 gap-2 hidden md:flex"
-            onClick={() => {
-              setEditingSetup(undefined)
-              setIsFormOpen(true)
-            }}
-          >
-            <Plus className="w-4 h-4" /> {t.newSetup}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon" onClick={toggleLang} className="rounded-none border-border hover:bg-primary/5">
+              <Globe className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={toggleTheme} className="rounded-none border-border hover:bg-primary/5">
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </Button>
+            <div className="h-8 w-[1px] bg-border mx-2" />
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-headline uppercase text-xs h-10 px-6 gap-2 hidden md:flex rounded-none"
+              onClick={() => {
+                setEditingSetup(undefined)
+                setIsFormOpen(true)
+              }}
+            >
+              <Plus className="w-4 h-4" /> {t.newSetup}
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
-        {/* Statistics Dashboard Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-card border border-border p-4 rounded-sm">
-            <p className="text-[10px] font-headline text-muted-foreground uppercase">{t.dashboard}</p>
-            <p className="text-2xl font-headline">{setups.length}</p>
-            <p className="text-[8px] text-primary uppercase">Configurations Active</p>
-          </div>
-          <div className="bg-card border border-border p-4 rounded-sm">
-            <p className="text-[10px] font-headline text-muted-foreground uppercase">Last Track</p>
-            <p className="text-2xl font-headline truncate">{setups[0]?.track || '--'}</p>
-            <p className="text-[8px] text-primary uppercase">Recent Session</p>
-          </div>
-          <div className="bg-card border border-border p-4 rounded-sm hidden md:block">
-            <p className="text-[10px] font-headline text-muted-foreground uppercase">Status</p>
-            <p className="text-2xl font-headline text-primary">LIVE</p>
-            <p className="text-[8px] text-primary uppercase">Telemetry Sync</p>
-          </div>
-          <div className="bg-card border border-border p-4 rounded-sm hidden md:block">
-            <p className="text-[10px] font-headline text-muted-foreground uppercase">Region</p>
-            <p className="text-2xl font-headline uppercase">{lang === 'en' ? 'EURO' : 'LATAM'}</p>
-            <p className="text-[8px] text-primary uppercase">Signal Strength</p>
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border pb-2">
-            <h2 className="text-sm font-headline flex items-center gap-2">
+      <main className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-12">
+        {/* Asymmetric Stats Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-4 lg:col-span-3 bg-card technical-border p-6 group hover:border-primary/50 transition-colors">
+            <div className="flex items-center gap-3 mb-4">
               <LayoutDashboard className="w-4 h-4 text-primary" />
-              {t.dashboard}
-            </h2>
+              <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest">{t.dashboard}</p>
+            </div>
+            <p className="text-5xl font-headline italic">{setups.length}</p>
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-[9px] text-primary uppercase font-bold">Stored Modules</span>
+              <div className="h-[1px] flex-1 bg-primary/20" />
+            </div>
+          </div>
+
+          <div className="md:col-span-8 lg:col-span-6 bg-card technical-border p-6 flex flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[10px] font-headline text-muted-foreground uppercase tracking-widest">Active Circuit</p>
+                <p className="text-3xl font-headline italic mt-1 uppercase truncate">{setups[0]?.track || '--'}</p>
+              </div>
+              <Activity className="w-5 h-5 text-primary" />
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-4">
+              <div className="text-center">
+                <p className="text-[8px] text-muted-foreground uppercase">Latency</p>
+                <p className="text-xs font-headline">0.42ms</p>
+              </div>
+              <div className="text-center border-x border-border">
+                <p className="text-[8px] text-muted-foreground uppercase">Packet Loss</p>
+                <p className="text-xs font-headline text-primary">0%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[8px] text-muted-foreground uppercase">Sync</p>
+                <p className="text-xs font-headline">Enabled</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-12 lg:col-span-3 bg-primary text-primary-foreground p-6 flex flex-col justify-between transform -skew-x-1 lg:skew-x-0">
+            <div className="flex justify-between items-start">
+              <p className="text-[10px] font-headline uppercase tracking-widest opacity-80">System Status</p>
+              <Cpu className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-4xl font-headline italic leading-none">OPTIMAL</p>
+              <p className="text-[10px] uppercase font-bold mt-2 opacity-80">All sensors verified</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Setup Grid Section */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between border-b-2 border-primary/20 pb-4">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-headline italic flex items-center gap-3">
+                <BarChart3 className="w-5 h-5 text-primary" />
+                Telemetry Logs
+              </h2>
+              <span className="bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">Local Repository</span>
+            </div>
             <Button 
               variant="outline" 
               size="sm" 
-              className="md:hidden h-8 font-headline text-[10px] uppercase"
+              className="md:hidden h-9 font-headline text-[10px] uppercase rounded-none border-primary text-primary"
               onClick={() => {
                 setEditingSetup(undefined)
                 setIsFormOpen(true)
@@ -158,29 +194,39 @@ export default function ApexTuneApp() {
           </div>
 
           {setups.length === 0 ? (
-            <div className="bg-card border border-dashed border-border p-16 flex flex-col items-center justify-center text-center space-y-4 rounded-sm">
-              <p className="text-muted-foreground max-w-xs">{t.noSetups}</p>
+            <div className="bg-card/30 border border-dashed border-border py-24 flex flex-col items-center justify-center text-center space-y-6 technical-border">
+              <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center">
+                <Settings2 className="w-8 h-8 text-muted-foreground/30" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-lg font-headline uppercase italic text-muted-foreground">{t.noSetups}</p>
+                <p className="text-xs text-muted-foreground/60 max-w-xs uppercase tracking-widest">Connect your telemetry feed or create a manual profile</p>
+              </div>
               <Button 
                 onClick={() => setIsFormOpen(true)}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 rounded-none h-11 px-8 font-headline uppercase"
               >
                 <Plus className="w-4 h-4 mr-2" /> {t.newSetup}
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {setups.map(setup => (
-                <SetupCard 
-                  key={setup.id} 
-                  setup={setup} 
-                  lang={lang} 
-                  onEdit={handleEdit} 
-                  onDelete={handleDelete} 
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {setups.map((setup, idx) => (
+                <div key={setup.id} className={cn(
+                  "animate-in fade-in slide-in-from-bottom-4 duration-500",
+                  `delay-[${idx * 100}ms]`
+                )}>
+                  <SetupCard 
+                    setup={setup} 
+                    lang={lang} 
+                    onEdit={handleEdit} 
+                    onDelete={handleDelete} 
+                  />
+                </div>
               ))}
             </div>
           )}
-        </div>
+        </section>
       </main>
 
       {/* Setup Form Dialog */}
@@ -190,21 +236,40 @@ export default function ApexTuneApp() {
           setEditingSetup(undefined)
         }
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border border-2">
-          <DialogHeader>
-            <DialogTitle className="font-headline uppercase flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" />
-              {editingSetup ? t.editSetup : t.newSetup}
-            </DialogTitle>
-          </DialogHeader>
-          <SetupForm 
-            initialData={editingSetup} 
-            lang={lang} 
-            onSave={handleSave} 
-            onCancel={() => setIsFormOpen(false)} 
-          />
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto bg-background/95 backdrop-blur-2xl border-primary border-t-4 rounded-none p-0">
+          <div className="p-8">
+            <DialogHeader className="mb-8">
+              <DialogTitle className="text-3xl font-headline italic uppercase flex items-center gap-4">
+                <div className="w-8 h-8 bg-primary text-primary-foreground flex items-center justify-center skew-x-[-12deg]">
+                  <Settings2 className="w-5 h-5 skew-x-[12deg]" />
+                </div>
+                {editingSetup ? t.editSetup : t.newSetup}
+              </DialogTitle>
+            </DialogHeader>
+            <SetupForm 
+              initialData={editingSetup} 
+              lang={lang} 
+              onSave={handleSave} 
+              onCancel={() => setIsFormOpen(false)} 
+            />
+          </div>
         </DialogContent>
       </Dialog>
+
+      <footer className="mt-20 border-t border-border py-12 px-8">
+        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-3 grayscale opacity-50">
+             <ChevronRight className="w-5 h-5 text-primary stroke-[3px]" />
+             <p className="text-xs font-headline uppercase tracking-[0.2em]">{t.title}</p>
+          </div>
+          <div className="flex gap-8 text-[10px] text-muted-foreground font-headline uppercase tracking-widest">
+            <span className="hover:text-primary cursor-pointer transition-colors">Telemetry API</span>
+            <span className="hover:text-primary cursor-pointer transition-colors">Documentation</span>
+            <span className="hover:text-primary cursor-pointer transition-colors">Privacy Protocol</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground uppercase font-headline">© 2024 ApexTune High Performance</p>
+        </div>
+      </footer>
     </div>
   )
 }
